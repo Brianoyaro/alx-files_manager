@@ -24,6 +24,7 @@ class DBClient {
   }
   async nbUsers() {
     const collection = this.db.collection('users');
+    // collection.remove({});
     const count = await collection.countDocuments();
     return count;
   }
