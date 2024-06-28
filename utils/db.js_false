@@ -1,0 +1,24 @@
+const {MongoClient} = require('mongodb');
+//console.log(process.env.USERNAME);
+const host = process.env.DB_HOST || 'localhost';
+const port = process.env.DB_PORT || 27017;
+const database = process.env.DB_DATABASE || 'files_manager';
+const url = `mongodb://${host}:${port}`;
+
+MongoClient.connect(url, function(err, client) {
+  /*console.log("Connected successfully to server");
+  const db = client.db(dbName);
+  client.close();*/
+  class DBClient {
+    constructor() {
+      this.client = client;
+    }
+    isAlive() {
+      return this.client.s.options.directConnections;
+    }
+    nbUsers() {}
+    nbFiles() {}
+  }
+  const dbClient = new DBClient();
+  module.exports = dbClient;
+});
