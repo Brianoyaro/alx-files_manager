@@ -3,6 +3,7 @@ const dbClient = require('../utils/db.js');
 const redisClient = require('../utils/redis.js');
 
 async function postUpload(req, res) {
+  let isUser = false;
   const token = req.headers['x-token'];
   let userCollection = dbClient.db.collection('users');
   let fileCollection = dbClient.db.collection('files');
@@ -12,6 +13,7 @@ async function postUpload(req, res) {
   for (let object of objects) {
     if (object._id.toString() === id.toString()) {
       //write code
+      isUser = true;
       let { name, type, parentId, isPublic, data } = req.body;
       if (!name) res.status(400).json({'error': 'Missing name'});
       if (!type) res.status(400).json({'error': 'Missing type'});
@@ -53,23 +55,22 @@ async function postUpload(req, res) {
     }
   }
   //no user associated with that token
-  res.status(401).json({'error': 'Unauthorized'})
+  if (isUser === false ) res.status(401).json({'error': 'Unauthorized'})
 }
 async function getShow(req, res) {
-  console.log('param id is: '+ id);
+  let isUser = false;
+  let id = req.params.id;
   const token = req.headers['x-token'];
   let userCollection = dbClient.db.collection('users');
   let fileCollection = dbClient.db.collection('files');
   const key = `auth_${token}`;
   const userId = await redisClient.get(key);
-  console.log('userid is ' + userID);
   let objects = await userCollection.find().toArray();
-  console.log('objects are ' + objects);
   for (let object of objects) {
     if (object._id.toString() === userId.toString()) {
       //write code
+      isUser = true;
       let files = await fileCollection.find().toArray();
-      console.log(files);
       let fileArray = [];
       let tracker  = false;
       for (let file of files) {
@@ -81,15 +82,16 @@ async function getShow(req, res) {
       if (tracker === false) {
         res.status(404).json({'error': 'Not found'});
       } else {
-        res.send(fileArray)
+        res.send(fileArray[0])
       }
     }
   }
   //no user associated with that token
-  res.status(401).json({'error': 'Unauthorized'})
+  if (isUser === false ) res.status(401).json({'error': 'Unauthorized'})
 }
 
 async function getIndex(req, res) {
+  let isUser = false;
   let { parentId, page } = req.query;
   if (!parentId) parentId = 0
   if (!page) page = 0;
@@ -102,12 +104,13 @@ async function getIndex(req, res) {
   for (let object of objects) {
     if (object._id.toString() === id.toString()) {
       //write code
+      isUser = true;
       let files = await fileCollection.find({'parentId': parentId}).toArray();
       //paginate. GOOGLE aggregate in node-mongo
     }
   }
   //no user associated with that token
-  res.status(401).json({'error': 'Unauthorized'})
+  if (isUser === false ) res.status(401).json({'error': 'Unauthorized'})
 }
 
 module.exports = { postUpload, getShow, getIndex };
