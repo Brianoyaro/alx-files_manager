@@ -30,7 +30,7 @@ async function postUpload(req, res) {
         parentId = 0;
       } else {
         //let fileCollection = dbClient.db.collection('files');
-	let savedFile = fileCollection.find({'parentId': parentId}).toArray();
+	let savedFile = await fileCollection.find({'parentId': parentId}).toArray();
 	if (savedFile.length === 0) res.status(400).json({'error': 'Parent not found'});
 	if (savedFile[0].type !== 'folder') res.status(400).json({'error': 'Parent is not a folder'});
       }
@@ -56,17 +56,20 @@ async function postUpload(req, res) {
   res.status(401).json({'error': 'Unauthorized'})
 }
 async function getShow(req, res) {
-  let id = req.params.id;
+  console.log('param id is: '+ id);
   const token = req.headers['x-token'];
   let userCollection = dbClient.db.collection('users');
   let fileCollection = dbClient.db.collection('files');
   const key = `auth_${token}`;
-  const id = await redisClient.get(key);
+  const userId = await redisClient.get(key);
+  console.log('userid is ' + userID);
   let objects = await userCollection.find().toArray();
+  console.log('objects are ' + objects);
   for (let object of objects) {
-    if (object._id.toString() === id.toString()) {
+    if (object._id.toString() === userId.toString()) {
       //write code
-      let files = await filesCollection.find().toArray();
+      let files = await fileCollection.find().toArray();
+      console.log(files);
       let fileArray = [];
       let tracker  = false;
       for (let file of files) {
@@ -76,7 +79,7 @@ async function getShow(req, res) {
 	}
       }
       if (tracker === false) {
-        res.status(404).json('error': 'Not found');
+        res.status(404).json({'error': 'Not found'});
       } else {
         res.send(fileArray)
       }
