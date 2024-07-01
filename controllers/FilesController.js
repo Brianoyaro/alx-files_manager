@@ -49,7 +49,8 @@ async function postUpload(req, res) {
 	let filename = uuid.v4();
 	let decodedData = Buffer.from(data, 'base64').toString();
 	//*****GOOGLE HOW TO SAVE decodedData to folderPAth as filename
-	fs.writeFile(folderPath + '/' + filename, decodedData, (err) => {
+	let locationFile = folderPath + '/' + filename;
+	fs.writeFile(locationFile, decodedData, (err) => {
 	  if (err) console.log('Error saving file');
 	});
 	let localPath = folderPath + '/' + filename

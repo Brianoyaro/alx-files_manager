@@ -34,12 +34,14 @@ async function getMe(req, res) {
   const id = await redisClient.get(key);
   //let user = await collection.find({'_id': id}).toArray();
   let objects = await collection.find().toArray();
+  let isUser = false;
   for (let object of objects) {
     if (object._id.toString() === id.toString()) {
+      isUser = true;
       res.json({'id': id, 'email': object.email});
     }
   }
-  res.status(401).json({'error': 'Unauthorized'})
+  if (isUser === false) res.status(401).json({'error': 'Unauthorized'});
 }
 
 module.exports = { postNew, getMe };
