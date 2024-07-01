@@ -50,6 +50,10 @@ async function postUpload(req, res) {
 	let filename = uuid.v4();
 	let decodedData = Buffer.from(data, 'base64').toString();
 	//*****GOOGLE HOW TO create a folder if not exists
+	if (!fs.existsSync(folderPath)) {
+	  //console.log(`creating ${folderPath}`);
+	  fs.mkdirSync(folderPath);
+	}
 	let locationFile = `${folderPath}/${filename}`;
         //fs.writeFileSync(locationFile, decodedData);
 	fs.writeFile(locationFile, decodedData, (err) => {
