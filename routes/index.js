@@ -10,6 +10,9 @@ const getMe = require('../controllers/UsersController.js').getMe;
 const postUpload = require('../controllers/FilesController.js').postUpload;
 const getShow = require('../controllers/FilesController.js').getShow;
 const getIndex = require('../controllers/FilesController.js').getIndex;
+const putPublish = require('../controllers/FilesController.js').putPublish;
+const putUnpublish = require('../controllers/FilesController.js').putUnpublish;
+const getFile = require('../controllers/FilesController.js').getFile;
 
 const router = express.Router();
 // Ensure the server can parse incoming JSON and URL-encoded data
@@ -36,5 +39,10 @@ router.post('/files', postUpload);
 
 router.get('/files/:id', getShow);
 router.get('/files', getIndex);
+
+router.put('/files/:id/publish', putPublish);
+router.put('/files/:id/unpublish', putUnpublish);
+
+router.get('/files/:id/data', getFile);
 
 module.exports = router;
