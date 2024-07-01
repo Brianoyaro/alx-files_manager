@@ -16,7 +16,7 @@ class DBClient {
   // because otherwise will result in using this.client in an unconnected state
   async connectDB() {
     await this.client.connect();
-    console.log('Successfully connected to the server');
+    //console.log('Successfully connected to the server');
     this.db = this.client.db(database);
   }
   isAlive() {

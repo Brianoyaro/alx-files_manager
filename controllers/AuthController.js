@@ -20,18 +20,30 @@ async function getConnect(req, res) {
     let userId = user[0]._id.toString();
     await redisClient.set(key, userId, 86400);
     //await redisClient.set(key, userId, 86400000);
-    res.status(201).json({'token': token});
+    res.status(200).json({'token': token});
   }
 }
 
 async function getDisconnect(req, res) {
   //write code
-  const xToken = req.headers['x-token'];
+  const token = req.headers['x-token'];
   //GOOGLE HOW TO NODE_REDIS DELETE A KEY
   //*************************************
-  await redisClient.del(xToken);
-  res.status(204).send();
-  //redisClient.del(xToken).then((val) => res.status(204).send());
+  const userCollection = dbClient.db.collection('users');
+  let userId = await redisClient.get(`auth_${token}`);
+  if (userId === null) userId = '';
+  let users = await userCollection.find().toArray();
+  let isUser = false;
+  for (let user of users) {
+    if (user._id.toString() === userId.toString()) {
+      isUser = true;
+      await redisClient.del(`auth_${token}`);
+      res.status(204).send();
+    }
+  }
+  if (isUser === false) {
+    res.status(401).json({'error': 'Unauthorized'});
+  }
 }
 
 module.exports = { getConnect, getDisconnect};

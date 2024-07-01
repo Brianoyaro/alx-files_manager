@@ -20,14 +20,8 @@ const bodyParser = require('body-parser');
 router.use(bodyParser.json());
 router.use(bodyParser.urlencoded({ extended: true }));
 
-router.get('/status', (req, res) => {
-  let value = getStatus();
-  res.json(value);
-});
-router.get('/stats', async (req, res) => {
-  let value = await getStats();
-  res.json(value);
-});
+router.get('/status', getStatus);
+router.get('/stats', getStats);
 
 router.post('/users', postNew);
 

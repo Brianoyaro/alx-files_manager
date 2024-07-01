@@ -31,7 +31,8 @@ async function getMe(req, res) {
   //console.log(token);
   const collection = dbClient.db.collection('users');
   const key = `auth_${token}`;
-  const id = await redisClient.get(key);
+  let id = await redisClient.get(key);
+  if (id === null) id = '';
   //let user = await collection.find({'_id': id}).toArray();
   let objects = await collection.find().toArray();
   let isUser = false;

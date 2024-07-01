@@ -10,7 +10,8 @@ async function postUpload(req, res) {
   let userCollection = dbClient.db.collection('users');
   let fileCollection = dbClient.db.collection('files');
   const key = `auth_${token}`;
-  const id = await redisClient.get(key);
+  let id = await redisClient.get(key);
+  if (id === null) id = '';
   let objects = await userCollection.find().toArray();
   for (let object of objects) {
     if (object._id.toString() === id.toString()) {
@@ -48,11 +49,13 @@ async function postUpload(req, res) {
 	let folderPath = process.env.FOLDER_PATH || '/tmp/files_manager';
 	let filename = uuid.v4();
 	let decodedData = Buffer.from(data, 'base64').toString();
-	//*****GOOGLE HOW TO SAVE decodedData to folderPAth as filename
-	/*let locationFile = folderPath + '/' + filename;
+	//*****GOOGLE HOW TO create a folder if not exists
+	let locationFile = `${folderPath}/${filename}`;
+        //fs.writeFileSync(locationFile, decodedData);
 	fs.writeFile(locationFile, decodedData, (err) => {
 	  if (err) console.log('Error saving file');
-	});*/
+    else console.log('success writing to file')
+	});
 	let localPath = folderPath + '/' + filename
         let savedFile = await fileCollection.insertOne({'userId': id.toString(), 'name': name, 'type': type, 'isPublic': isPublic, 'parentId': parentId, 'localPath': localPath});
 	res.status(201).json({'id': savedFile.ops[0]._id, 'userId': id.toString(), 'name': name, 'type': type, 'isPublic': isPublic, 'parentId': parentId});
@@ -70,7 +73,8 @@ async function getShow(req, res) {
   let userCollection = dbClient.db.collection('users');
   let fileCollection = dbClient.db.collection('files');
   const key = `auth_${token}`;
-  const userId = await redisClient.get(key);
+  let userId = await redisClient.get(key);
+  if (userId === null) userId = '';
   let objects = await userCollection.find().toArray();
   for (let object of objects) {
     if (object._id.toString() === userId.toString()) {
@@ -108,7 +112,8 @@ async function getIndex(req, res) {
   let userCollection = dbClient.db.collection('users');
   let fileCollection = dbClient.db.collection('files');
   const key = `auth_${token}`;
-  const id = await redisClient.get(key);
+  let id = await redisClient.get(key);
+  if (id === null) id = '';
   let objects = await userCollection.find().toArray();
   for (let object of objects) {
     if (object._id.toString() === id.toString()) {
@@ -146,6 +151,7 @@ async function putPublish(req, res) {
   let token = req.headers['x-token'];
   let key = `auth_${token}`;
   let userId = await redisClient.get(key);
+  if (userId === null) userId = '';
   let users = await userCollection.find().toArray();
   let isUser = false;
   for (let user of users) {
@@ -182,6 +188,7 @@ async function putUnpublish(req, res) {
   let token = req.headers['x-token'];
   let key = `auth_${token}`;
   let userId = await redisClient.get(key);
+  if (userId === null) userId = '';
   let users = await userCollection.find().toArray();
   let isUser = false;
   for (let user of users) {
@@ -217,6 +224,7 @@ async function getFile(req, res) {
   let token = req.headers['x-token'];
   let key = `auth_${token}`;
   let userId = await redisClient.get(key);
+  if (userId === null) userId = '';
   //write code here
   let files = await fileCollection.find().toArray();
   let isFile = false;

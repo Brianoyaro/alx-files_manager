@@ -1,14 +1,16 @@
 const database = require('../utils/db.js');
 const redisClient = require('../utils/redis.js');
-function getStatus() {
+
+function getStatus(req, res) {
   let dbAlive = database.isAlive();
   let redisAlive = redisClient.isAlive();
-  return { 'redis': redisAlive, 'db': dbAlive }
+  res.status(200).json({ 'redis': redisAlive, 'db': dbAlive });
 }
-async function getStats() {
+async function getStats(req, res) {
   let users = await database.nbUsers();
   let files = await database.nbFiles();
   // return { 'users': 1, 'files': 12 };
-  return { 'users': users, 'files': files };
+  res.status(200).json({ 'users': users, 'files': files });
 }
+
 module.exports = {getStatus, getStats}
