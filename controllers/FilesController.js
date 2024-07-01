@@ -49,10 +49,10 @@ async function postUpload(req, res) {
 	let filename = uuid.v4();
 	let decodedData = Buffer.from(data, 'base64').toString();
 	//*****GOOGLE HOW TO SAVE decodedData to folderPAth as filename
-	let locationFile = folderPath + '/' + filename;
+	/*let locationFile = folderPath + '/' + filename;
 	fs.writeFile(locationFile, decodedData, (err) => {
 	  if (err) console.log('Error saving file');
-	});
+	});*/
 	let localPath = folderPath + '/' + filename
         let savedFile = await fileCollection.insertOne({'userId': id.toString(), 'name': name, 'type': type, 'isPublic': isPublic, 'parentId': parentId, 'localPath': localPath});
 	res.status(201).json({'id': savedFile.ops[0]._id, 'userId': id.toString(), 'name': name, 'type': type, 'isPublic': isPublic, 'parentId': parentId});
