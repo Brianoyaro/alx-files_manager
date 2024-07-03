@@ -16,9 +16,9 @@ const getFile = require('../controllers/FilesController.js').getFile;
 
 const router = express.Router();
 // Ensure the server can parse incoming JSON and URL-encoded data
-const bodyParser = require('body-parser');
+/*const bodyParser = require('body-parser');
 router.use(bodyParser.json());
-router.use(bodyParser.urlencoded({ extended: true }));
+router.use(bodyParser.urlencoded({ extended: true }));*/
 
 router.get('/status', getStatus);
 router.get('/stats', getStats);

@@ -6,9 +6,11 @@ async function postNew(req, res) {
   let { email, password } = req.body;
   if (!email) {
     res.status(400).json({'error': 'Missing email'});
+    return;
   }
   if (!password) {
     res.status(400).json({'error': 'Missing password'});
+    return;
   }
   // create a collection using database_client
   const collection = dbClient.db.collection('users');
